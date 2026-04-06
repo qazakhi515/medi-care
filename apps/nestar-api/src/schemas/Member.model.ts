@@ -29,14 +29,14 @@ const MemberSchema = new Schema(
 
 		memberNick: {
 			type: String,
-			enum: MemberAuthType,
-			default: MemberAuthType.PHONE,
+			index: { unique: true, sparse: true },
+			required: true,
 		},
 
 		memberPassword: {
 			type: String,
-			enum: MemberAuthType,
-			default: MemberAuthType.PHONE,
+			select: false,
+			required: true,
 		},
 
 		memberFullName: {
@@ -112,7 +112,7 @@ const MemberSchema = new Schema(
 			default: 0,
 		},
 
-		deleteAt: {
+		deletedAt: {
 			type: Date,
 		},
 	},
