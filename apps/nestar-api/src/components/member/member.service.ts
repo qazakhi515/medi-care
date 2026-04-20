@@ -59,9 +59,9 @@ export class MemberService {
 	public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
 		const search: T = {
 			_id: targetId,
-			memberStatus: {
-				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
-			},
+			// memberStatus: {
+			// 	$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
+			// },
 		};
 		const targetMember = await this.memberModel.findOne(search).lean().exec();
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
