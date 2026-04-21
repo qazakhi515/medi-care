@@ -12,6 +12,8 @@ export const availablePropertySorts = [
 	'propertyRank',
 	'propertyPrice',
 ];
+export const availableBoardArticle = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
+export const availableCommentSorts = ['createdAt', 'updatedAt'];
 
 // IMAGE CONFIGURATION
 import { v4 as uuidv4 } from 'uuid';
