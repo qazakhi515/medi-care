@@ -13,6 +13,7 @@ import { MemberModule } from '../member/member.module';
 		AuthModule,
 		ViewModule,
 		forwardRef(() => MemberModule),
+		PropertyModule,
 	],
 	providers: [PropertyResolver, PropertyService],
 })
