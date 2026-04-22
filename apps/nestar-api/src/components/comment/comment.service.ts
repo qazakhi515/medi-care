@@ -99,7 +99,6 @@ export class CommentService {
 				},
 			},
 		]);
-
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		return result[0];
