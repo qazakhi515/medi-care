@@ -13,21 +13,19 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
+import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 
 @Injectable()
 export class MemberService {
-	updateMember(memberId: Schema.Types.ObjectId, input: MemberUpdate): Member | PromiseLike<Member> {
-		throw new Error('Method not implemented.');
-	}
 	constructor(
 		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		@InjectModel('Member') private readonly followModel: Model<Follower | Following>,
 		private readonly authService: AuthService,
 		private readonly viewService: ViewService,
 		private readonly likeService: LikeService,
 	) {}
 
 	public async signup(input: MemberInput): Promise<Member> {
-		//Hash password
 		input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 		try {
 			const result = await this.memberModel.create(input);
@@ -60,12 +58,29 @@ export class MemberService {
 		return response;
 	}
 
+	public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {
+		const result: Member = await this.memberModel
+			.findOneAndUpdate(
+				{
+					_id: memberId,
+					memberStatus: MemberStatus.ACTIVE,
+				},
+				input,
+				{ new: true },
+			)
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPLOAD_FAILED);
+
+		result.accessToken = await this.authService.createToken(result);
+		return result;
+	}
 	public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
 		const search: T = {
 			_id: targetId,
-			// memberStatus: {
-			// 	$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
-			// },
+			memberStatus: {
+				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
+			},
 		};
 		const targetMember = await this.memberModel.findOne(search).lean().exec();
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
@@ -80,8 +95,15 @@ export class MemberService {
 
 			const likeInput = { memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
 			targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
+
+			targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
 		}
 		return targetMember;
+	}
+
+	public async checkSubscription(followerId: ObjectId, followingId: ObjectId): Promise<MeFollowed[]> {
+		const result = await this.followModel.findOne({ followingId: followingId, followerId: followerId }).exec();
+		return result ? [{ followerId: followerId, followingId: followingId, myFollowing: true }] : [];
 	}
 
 	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
