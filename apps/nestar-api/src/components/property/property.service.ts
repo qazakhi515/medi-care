@@ -19,6 +19,7 @@ import moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class PropertyService {
@@ -26,6 +27,7 @@ export class PropertyService {
 		@InjectModel('Property') private readonly propertyModel: Model<Property>,
 		private memberService: MemberService,
 		private readonly viewService: ViewService,
+		private readonly likeService: LikeService,
 	) {}
 
 	public async createProperty(input: PropertyInput): Promise<Property> {
