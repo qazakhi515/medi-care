@@ -26,7 +26,7 @@ export class FollowService {
 
 		const result = await this.registerSubscription(followerId, followingId);
 
-		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 });
+		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 }); //murojatchini +1 ga oshirib qoydi
 		await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 });
 
 		return result;
@@ -55,7 +55,7 @@ export class FollowService {
 
 		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: -1 });
+		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: -1 }); //murojatchini -1 ga kamaytirib qoydi
 		await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: -1 });
 
 		return result;
@@ -92,6 +92,7 @@ export class FollowService {
 		return result[0];
 	}
 	public async getMemberFollowers(memberId: ObjectId, input: FollowInquiry): Promise<Followers> {
+		//member id = murojatchi, followingId= following id ni followerini korishihmi z
 		const { page, limit, search } = input;
 		if (!search?.followingId) throw new InternalServerErrorException(Message.BAD_REQUEST);
 		const match: T = { followingId: search?.followingId };

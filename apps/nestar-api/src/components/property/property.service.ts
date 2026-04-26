@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Schema } from 'mongoose';
 import {
 	AgentPropertiesInquiry,
 	AllPropertiesInquiry,
@@ -118,7 +118,7 @@ export class PropertyService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							// meLiked
+							lookupAuthMemberLiked(memberId),
 							lookupMember,
 							{ $unwind: '$memberData' },
 						],
@@ -294,4 +294,7 @@ export class PropertyService {
 			)
 			.exec();
 	}
+}
+function lookupAuthMemberLiked(memberId: Schema.Types.ObjectId): import('mongoose').PipelineStage.FacetPipelineStage {
+	throw new Error('Function not implemented.');
 }
