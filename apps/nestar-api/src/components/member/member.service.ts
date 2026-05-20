@@ -121,16 +121,14 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [
-							{ $skip: (input.page - 1) * input.limit }, //
-							{ $limit: input.limit },
-							lookupAuthMemberLiked(memberId),
-						],
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }, lookupAuthMemberLiked(memberId)],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
 			])
 			.exec();
+
+		console.log('result:', result);
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 		return result[0];
 	}
