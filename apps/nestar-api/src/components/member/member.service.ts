@@ -71,7 +71,7 @@ export class MemberService {
 			)
 			.exec();
 
-		if (!result) throw new InternalServerErrorException(Message.UPLOAD_FAILED);
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
 		result.accessToken = await this.authService.createToken(result);
 		return result;
@@ -110,7 +110,8 @@ export class MemberService {
 	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
 		const { text } = input.search;
 		const match: T = { memberType: MemberType.AGENT, memberStatus: MemberStatus.ACTIVE };
-		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+		const direction = input?.direction === Direction.ASC ? Direction.ASC : Direction.DESC;
+		const sort: T = { [input?.sort ?? 'createdAt']: direction };
 
 		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
 		console.log('match:', match);

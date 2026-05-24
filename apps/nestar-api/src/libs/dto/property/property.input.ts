@@ -27,6 +27,7 @@ export class PropertyInput {
 
 	@IsNotEmpty()
 	@Field(() => Number)
+	@Min(0)
 	propertyPrice: number;
 
 	@IsNotEmpty()

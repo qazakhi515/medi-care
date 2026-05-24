@@ -16,7 +16,6 @@ import { PropertyStatus } from '../../libs/enums/property.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import moment from 'moment';
 import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
@@ -33,6 +32,7 @@ export class PropertyService {
 
 	public async createProperty(input: PropertyInput): Promise<Property> {
 		try {
+			input.propertyPrice = input.propertyPrice ?? 0;
 			const result = await this.propertyModel.create(input);
 			// increase memberProperties
 			await this.memberService.memberStatsEditor({
@@ -74,15 +74,15 @@ export class PropertyService {
 	}
 
 	public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<Property> {
-		let { propertyStatus, soldAt, deletedAt } = input;
+		const { propertyStatus } = input;
 		const search: T = {
 			_id: input._id,
 			memberId: memberId,
 			propertyStatus: PropertyStatus.ACTIVE,
 		};
 
-		if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
-		else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+		if (propertyStatus === PropertyStatus.SOLD) input.soldAt = new Date();
+		else if (propertyStatus === PropertyStatus.DELETE) input.deletedAt = new Date();
 
 		const result = await this.propertyModel
 			.findOneAndUpdate(search, input, {
@@ -92,7 +92,7 @@ export class PropertyService {
 
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-		if (soldAt || deletedAt) {
+		if (input.soldAt || input.deletedAt) {
 			await this.memberService.memberStatsEditor({
 				_id: memberId,
 				targetKey: 'memberProperties',
@@ -255,14 +255,14 @@ export class PropertyService {
 		return result[0];
 	}
 	public async updatePropertyByAdmin(input: PropertyUpdate): Promise<Property> {
-		let { propertyStatus, soldAt, deletedAt } = input;
+		const { propertyStatus } = input;
 		const search: T = {
 			_id: input._id,
 			propertyStatus: PropertyStatus.ACTIVE,
 		};
 
-		if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
-		else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+		if (propertyStatus === PropertyStatus.SOLD) input.soldAt = new Date();
+		else if (propertyStatus === PropertyStatus.DELETE) input.deletedAt = new Date();
 
 		const result = await this.propertyModel
 			.findOneAndUpdate(search, input, {
@@ -272,7 +272,7 @@ export class PropertyService {
 
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-		if (soldAt || deletedAt) {
+		if (input.soldAt || input.deletedAt) {
 			await this.memberService.memberStatsEditor({
 				_id: result.memberId,
 				targetKey: 'memberProperties',

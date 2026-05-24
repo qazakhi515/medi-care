@@ -12,6 +12,7 @@ import {
 	lookupFollowingData,
 } from '../../libs/config';
 import { T } from '../../libs/types/common';
+import { exec } from 'child_process';
 
 @Injectable()
 export class FollowService {
@@ -53,10 +54,12 @@ export class FollowService {
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		const result = await this.followModel.findOneAndDelete({
-			followingId: followingId,
-			followerId: followerId,
-		});
+		const result = await this.followModel
+			.findOneAndDelete({
+				followingId: followingId,
+				followerId: followerId,
+			})
+			.exec();
 
 		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
