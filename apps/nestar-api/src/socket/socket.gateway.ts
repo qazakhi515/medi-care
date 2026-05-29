@@ -30,7 +30,6 @@ export class SocketGateway implements OnGatewayInit {
 
 	@WebSocketServer()
 	server: Server;
-
 	public afterInit(server: Server) {
 		this.logger.verbose(`WebSocket Server Initialized & total: ${this.summaryClient}`);
 	}
