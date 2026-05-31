@@ -1,5 +1,12 @@
 import { Logger } from '@nestjs/common';
-import { OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+	ConnectedSocket,
+	MessageBody,
+	OnGatewayInit,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'ws';
 import * as WebSocket from 'ws';
 import { AuthService } from '../components/auth/auth.service';
@@ -84,7 +91,7 @@ export class SocketGateway implements OnGatewayInit {
 		this.broadcastMessage(client, infoMsg); //usizlgan client dan  tashqari hamma client ga jonatadi
 	}
 	@SubscribeMessage('message')
-	public async handleMessage(client: WebSocket, payload: string): Promise<void> {
+	public async handleMessage(@ConnectedSocket() client: WebSocket, @MessageBody() payload: string): Promise<void> {
 		const authMember = this.clientAuthMap.get(client);
 		const newMessage: MessagePayload = { event: 'message', text: payload, memberData: authMember };
 		const clientNick: string = authMember?.memberNick ?? 'Guest';
