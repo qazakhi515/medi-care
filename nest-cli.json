@@ -1,31 +1,31 @@
 {
 	"$schema": "https://json.schemastore.org/nest-cli",
 	"collection": "@nestjs/schematics",
-	"sourceRoot": "apps/nestar-api/src",
+	"sourceRoot": "apps/medicare-api/src",
 	"compilerOptions": {
 		"deleteOutDir": true,
 		"webpack": true,
-		"tsConfigPath": "apps/nestar-api/tsconfig.app.json"
+		"tsConfigPath": "apps/medicare-api/tsconfig.app.json"
 	},
 	"monorepo": true,
-	"root": "apps/nestar-api",
+	"root": "apps/medicare-api",
 	"projects": {
-		"nestar-api": {
+		"medicare-api": {
 			"type": "application",
-			"root": "apps/nestar-api",
+			"root": "apps/medicare-api",
 			"entryFile": "main",
-			"sourceRoot": "apps/nestar-api/src",
+			"sourceRoot": "apps/medicare-api/src",
 			"compilerOptions": {
-				"tsConfigPath": "apps/nestar-api/tsconfig.app.json"
+				"tsConfigPath": "apps/medicare-api/tsconfig.app.json"
 			}
 		},
-		"nestar-batch": {
+		"medicare-batch": {
 			"type": "application",
-			"root": "apps/nestar-batch",
+			"root": "apps/medicare-batch",
 			"entryFile": "main",
-			"sourceRoot": "apps/nestar-batch/src",
+			"sourceRoot": "apps/medicare-batch/src",
 			"compilerOptions": {
-				"tsConfigPath": "apps/nestar-batch/tsconfig.app.json"
+				"tsConfigPath": "apps/medicare-batch/tsconfig.app.json"
 			}
 		}
 	}

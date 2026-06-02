@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Member } from 'apps/nestar-api/src/libs/dto/member/member';
-import { Property } from 'apps/nestar-api/src/libs/dto/property/property';
-import { PropertyStatus } from 'apps/nestar-api/src/libs/enums/property.enum';
-import { MemberStatus, MemberType } from 'apps/nestar-api/src/libs/enums/member.enum';
+import { Member } from 'apps/medicare-api/src/libs/dto/member/member';
+import { Property } from 'apps/medicare-api/src/libs/dto/property/property';
+import { PropertyStatus } from 'apps/medicare-api/src/libs/enums/property.enum';
+import { MemberStatus, MemberType } from 'apps/medicare-api/src/libs/enums/member.enum';
 @Injectable()
 export class BatchService {
 	constructor(
@@ -67,6 +67,6 @@ export class BatchService {
 	}
 
 	getHello(): string {
-		return 'Welcome to Nestar BATCH server!';
+		return 'Welcome to Medi-care BATCH server!';
 	}
 }
