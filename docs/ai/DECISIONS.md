@@ -69,29 +69,46 @@
 
 ---
 
-## ADR-006 — Defer the core domain mapping decision (Doctor vs Appointment)
+## ADR-006 — Core domain model (ACCEPTED, defined by AGENTS.md)
 
-**Decision:** Do not yet decide whether `Property` becomes `Doctor`, `Appointment`, or both. Leave it for Phase 2.
+**Decision:** The core domain mapping is **no longer open** — it is fixed by `AGENTS.md` as the canonical spec. The target hospital model is:
 
-**Why:** A hospital has two related core entities (the **provider/Doctor** and the **transaction/Appointment**) where real-estate had one (`Property`). The split materially changes Phase 2 scope and should be decided deliberately, not implicitly during a rename.
-
-**Risks:** Phase 2 cannot start until this is chosen; blocks downstream schema and frontend work.
-
-**Alternatives (to be chosen in Phase 2):**
-| Option | Description | Trade-off |
+| Real-estate (Nestar) | Healthcare (Medi-care) | Kind |
 |---|---|---|
-| Doctor + new Appointment | Rename Property→Doctor, add Appointment domain | Fullest model, most work |
-| Doctor only | Rename Property→Doctor, defer booking | Smallest faithful step |
-| Appointment as core | Property→Appointment directly | Skips a doctor catalog |
+| `Property` (catalog listing) | **`Hospital`** (care-room / catalog entity) | rename |
+| — | **`Doctor`** (professional profile, `doctors.memberId → members._id`) | new |
+| — | **`DoctorSchedule`** (availability, `doctorSchedules.doctorId → doctors._id`) | new |
+| — | **`Appointment`** (patient↔doctor booking) | new |
+| — | **`Payment`** (one per appointment) | new |
+| — | **`PatientProfile`** (medical data extending a member) | new |
+| `MemberType` `USER/AGENT/ADMIN` | `PATIENT / NURSE / DOCTOR / ADMIN` | rename |
+
+**Why:** Earlier this was deferred (a hospital has both a provider and a transaction entity, unlike real-estate's single `Property`). `AGENTS.md` resolves it: **Hospitals are the catalog entity** (the `Property` analog), while Doctor / Schedule / Appointment / Payment / PatientProfile are **new** domains. This supersedes the earlier "Property → Doctor" assumption in prior drafts of `BACKEND_MIGRATION.md` / `FRONTEND_MIGRATION.md`.
+
+**Risks:** Larger Phase 2 scope (5 new domains + 1 rename) vs a single rename. Mitigated by AGENTS.md's "migrate one workflow at a time" rule.
+
+**Constraints carried from AGENTS.md:** no `hospitalId` on doctors/appointments; no `currency`/`transactionId` on payments; no reviews or notification redesign during appointment/payment work; do not store a `doctor` ObjectId on `members` (ownership lives on `doctors.memberId`).
 
 ---
 
 ## ADR-007 — Keep app names domain-neutral but branded (`medicare-api`, `medicare-batch`)
 
-**Decision:** Rename apps to `medicare-api` / `medicare-batch` rather than function-specific names (e.g. `hospital-api`).
+**Decision:** Apps are named `medicare-api` / `medicare-batch` (single word `medicare`, no hyphen) rather than function-specific names (e.g. `hospital-api`).
 
-**Why:** Mirrors the original `nestar-api`/`nestar-batch` convention (brand + role), minimizing churn and keeping the monorepo layout familiar.
+**Why:** Mirrors the original `nestar-api`/`nestar-batch` convention (brand + role), matches the npm package name `medicare`, and minimizes churn.
 
 **Risks:** None significant.
 
 **Alternatives:** `api`/`batch` (drop brand) — rejected: loses product identity in multi-repo/CI contexts.
+
+---
+
+## ADR-008 — Reconcile app-name spelling to `medicare-*` (not `medi-care-*`)
+
+**Decision:** Where docs/specs disagreed on hyphenation, the canonical form is **`medicare-api` / `medicare-batch`** (matching the committed folders and `package.json` name). `AGENTS.md` was updated to match the repo.
+
+**Why:** The Phase 1 rename committed `medicare-*` and the project builds under those names. Editing one spec doc is far lower risk than re-renaming 80+ files; `medicare` also matches the npm package name.
+
+**Risks:** The product brand is written "Medi-care" (hyphenated) in UI strings, so identifiers (`medicare`) and brand ("Medi-care") differ in spelling. Accepted and documented.
+
+**Alternatives:** Rename folders to `medi-care-*` to match the brand exactly — rejected: a second large rename with no functional benefit. Revisit only if a hard naming requirement emerges.

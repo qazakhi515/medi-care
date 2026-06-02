@@ -5,11 +5,12 @@
 
 ---
 
-## 🔴 P0 — Decisions that unblock everything
+## 🔴 P0 — Status of blocking decisions
 
-1. **Decide the core domain mapping** (see `DECISIONS.md` ADR-006): `Property` → `Doctor only`, `Doctor + Appointment`, or `Appointment as core`. Phase 2 cannot start without this.
-2. **Decide DB strategy**: keep `/Nestar` database name, or plan a data migration to a `Medicare` DB (with backfill + cutover window).
-3. **Commit Phase 1** rename (if approved) on the `modification` branch or a dedicated `rename/medicare` branch.
+1. ✅ **Core domain mapping — RESOLVED** by `AGENTS.md` / `DECISIONS.md` ADR-006: `Property → Hospital`; add `Doctor`, `DoctorSchedule`, `Appointment`, `Payment`, `PatientProfile`; roles `PATIENT/NURSE/DOCTOR/ADMIN`.
+2. ✅ **App-name spelling — RESOLVED** (`DECISIONS.md` ADR-008): canonical is `medicare-api` / `medicare-batch`; AGENTS.md reconciled to match the repo.
+3. ⏳ **DB strategy** — keep `/Nestar` database name for now (ADR-004); revisit only before any collection rename actually ships.
+4. ✅ **Phase 1 committed** (`06a6979` rename, `35b619b` docs). Pending: commit the `docs/ → docs/ai/` relocation.
 
 ---
 
@@ -25,16 +26,21 @@
 
 ---
 
-## 🧬 Backend Domain Migration (Phase 2 — after P0 decisions)
+## 🧬 Backend Domain Migration (Phase 2 — canonical model per AGENTS.md)
+
+> Migrate **one workflow at a time**; update `COMPLETED_TASKS.md` after each.
 
 | Priority | Task |
 |---|---|
-| 1 | Rename `MemberType` values `USER/AGENT/ADMIN` → `PATIENT/DOCTOR/ADMIN`; update guards/roles |
-| 2 | Rename `property` module/domain → `doctor` (schema, DTOs, enums, resolver, service) |
-| 3 | Replace `PropertyType/Status/Location` → `Specialty/DoctorStatus/Department` enums |
-| 4 | Add new `appointment` domain (schema, DTOs, resolver, service) if chosen |
-| 5 | Update `batch` jobs to rank doctors instead of agents/properties |
-| 6 | Write MongoDB migration scripts for any collection/field renames |
+| 1 | Rename `MemberType` values `USER/AGENT/ADMIN` → `PATIENT/NURSE/DOCTOR/ADMIN`; update guards/roles |
+| 2 | Rename `property` module/domain → `hospital` (schema, DTOs, enums, resolver, service); collection `properties → hospitals` (with migration) |
+| 3 | Add `doctor` domain — profile, `doctors.memberId → members._id`; enums `doctorStatus`, `specialization` |
+| 4 | Add `doctor-schedule` domain — `doctorSchedules.doctorId → doctors._id`; enums `scheduleStatus`, `dayOfWeek` |
+| 5 | Add `appointment` domain — `patientId → members._id`, `doctorId → doctors._id`; enum `appointmentStatus`; double-booking guard |
+| 6 | Add `payment` domain — one per appointment; enums `paymentStatus`, `paymentMethod` |
+| 7 | Add `patient-profile` domain — `patientProfiles.memberId → members._id`; enums `gender`, `bloodType` |
+| 8 | Update `batch` jobs to healthcare entities |
+| 9 | Write MongoDB migration scripts for any collection/field renames |
 
 ---
 

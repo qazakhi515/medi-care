@@ -29,11 +29,12 @@ Core entity is **Property** (a listing owned by an `AGENT` member). Members can 
 
 ## 2. New Project Summary (Medi-care)
 
-**Medi-care** is the target **hospital-management** platform, reusing the same NestJS GraphQL monorepo skeleton. The intent (per `AGENTS.md`) is a hospital domain where:
+**Medi-care** is the target **hospital-management** platform, reusing the same NestJS GraphQL monorepo skeleton. The canonical domain model is defined by `AGENTS.md` (source of truth) and locked in `DECISIONS.md` ADR-006:
 
-- `Member` becomes the identity layer for **patients / doctors / admins**.
-- The core sellable entity (`Property`) is intended to become a clinical entity (**Doctor profile** and/or **Appointment**) in a later phase.
-- Supporting domains (articles, comments, likes, follows, views, chat) map to health content, reviews, favorites, follow-a-doctor, profile views, and patient↔doctor messaging.
+- `Member` is the base account (`members` collection) with roles **`PATIENT / NURSE / DOCTOR / ADMIN`**.
+- **`Property` → `Hospital`** — the care-room / catalog-style entity (the direct rename target).
+- **New domains:** `Doctor` (profile, `doctors.memberId → members._id`), `DoctorSchedule`, `Appointment` (patient↔doctor booking), `Payment` (one per appointment), `PatientProfile` (medical data extending a member).
+- Supporting domains (board article, comment, like, follow, view, notification, chat) carry over; per AGENTS.md, **do not** add reviews or redesign notifications during appointment/payment work.
 
 **As of this session, only the rename layer is done.** The domain entities are still real-estate (`Property`, `PropertyType`, etc.); no clinical schema exists yet.
 
@@ -44,7 +45,7 @@ Core entity is **Property** (a listing owned by an `AGENT` member). Members can 
 Transform the real-estate Nestar backend into the Medi-care hospital backend in **safe, staged layers**:
 
 1. **Phase 1 — Rename layer (DONE):** rename all visible project/app identifiers `Nestar → Medi-care`. No logic, API, or DB changes.
-2. **Phase 2 — Domain remap (PENDING):** `MemberType` roles → `PATIENT/DOCTOR/ADMIN`; `Property` → `Doctor` and a new `Appointment` domain.
+2. **Phase 2 — Domain remap (PENDING):** `MemberType` roles → `PATIENT/NURSE/DOCTOR/ADMIN`; `Property` → `Hospital`; add `Doctor`, `DoctorSchedule`, `Appointment`, `Payment`, `PatientProfile`. Migrate one workflow at a time.
 3. **Phase 3 — Data & API:** GraphQL type renames, schema/collection changes, migrations.
 4. **Phase 4 — Frontend alignment** (see `FRONTEND_MIGRATION.md`).
 
@@ -75,14 +76,18 @@ Transform the real-estate Nestar backend into the Medi-care hospital backend in 
 
 | Module | Phase 1 (rename) | Phase 2 (planned) |
 |---|---|---|
-| `auth` | Import paths updated only | Role enum values change (`AGENT→DOCTOR`) |
-| `member` | Unchanged | Add doctor/patient profile fields |
-| `property` | Unchanged | Rename → `doctor`; add new `appointment` module |
-| `board-article` | Unchanged | Re-theme to health articles |
-| `comment` | Unchanged | Re-theme to reviews |
-| `like` / `follow` / `view` | Unchanged | Favorites / follow-a-doctor / profile views |
+| `auth` | Import paths updated only | Roles → `PATIENT/NURSE/DOCTOR/ADMIN` |
+| `member` | Unchanged | Keep `members` base; add `PatientProfile` domain (no `doctor` id on members) |
+| `property` | Unchanged | Rename → `hospital` (catalog entity) |
+| (new) `doctor` | — | New module: profile, `doctors.memberId → members._id` |
+| (new) `doctor-schedule` | — | New module: availability slots |
+| (new) `appointment` | — | New module: patient↔doctor bookings |
+| (new) `payment` | — | New module: one payment per appointment |
+| (new) `patient-profile` | — | New module: medical data extending a member |
+| `board-article` | Unchanged | Carry over (health content) |
+| `comment` / `like` / `follow` / `view` | Unchanged | Carry over (no review redesign per AGENTS.md) |
 | `socket` (chat) | Import paths updated only | Patient↔doctor messaging (no structural change) |
-| `batch` | Import paths + string updated | Rank doctors instead of agents/properties |
+| `batch` | Import paths + string updated | Adjust ranking to healthcare entities |
 
 > No new modules were added in Phase 1. All module wiring (`components.module.ts`) is structurally unchanged.
 
@@ -96,10 +101,10 @@ Transform the real-estate Nestar backend into the Medi-care hospital backend in 
 
 | Current GraphQL surface | Planned |
 |---|---|
-| `MemberType` values `USER/AGENT/ADMIN` | `PATIENT/DOCTOR/ADMIN` |
-| `createProperty`, `getProperties`, `getAgentProperties`, `likeTargetProperty`, … | `createDoctor` / `getDoctors` / `getDoctorProfiles` / `likeTargetDoctor`, plus new `bookAppointment`, `getAppointments` |
-| `Property`, `Properties`, `PropertyInput`, `PropertyUpdate` | `Doctor*`, plus new `Appointment*` types |
-| `PropertyType`, `PropertyStatus`, `PropertyLocation` | `Specialty`, `DoctorStatus`, `Department` |
+| `MemberType` values `USER/AGENT/ADMIN` | `PATIENT/NURSE/DOCTOR/ADMIN` |
+| `createProperty`, `getProperties`, `getAgentProperties`, … | `createHospital` / `getHospitals` / … ; plus new `Doctor`, `Appointment`, `Payment` operations |
+| `Property`, `Properties`, `PropertyInput`, `PropertyUpdate` | `Hospital*` types; plus new `Doctor*`, `DoctorSchedule*`, `Appointment*`, `Payment*`, `PatientProfile*` |
+| `PropertyType`, `PropertyStatus`, `PropertyLocation` | `doctorStatus`, `specialization`, `scheduleStatus`, `dayOfWeek`, `appointmentStatus`, `paymentStatus`, `paymentMethod`, `gender`, `bloodType` (see AGENTS.md) |
 
 ---
 

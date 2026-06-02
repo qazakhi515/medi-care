@@ -31,11 +31,13 @@
 
 ### A. Phase 2 — domain remap planning
 ```
-Plan Phase 2 of the Nestar→Medi-care migration: rename the `property` domain to
-`doctor` and the MemberType roles USER/AGENT/ADMIN to PATIENT/DOCTOR/ADMIN.
-Read docs/DECISIONS.md ADR-006 for the chosen core mapping. Produce a file-by-file
-plan covering schema, DTOs, enums, resolver, service, batch jobs, and a MongoDB
-migration script. Do NOT touch the database yet. Plan first, then wait for approval.
+Plan Phase 2 of the Nestar→Medi-care migration per AGENTS.md / docs/ai/DECISIONS.md
+ADR-006: rename the `property` domain to `hospital`, change MemberType roles
+USER/AGENT/ADMIN to PATIENT/NURSE/DOCTOR/ADMIN, and add the new domains doctor,
+doctor-schedule, appointment, payment, patient-profile (with the AGENTS.md ER rules
+and healthcare enums). Produce a file-by-file plan covering schema, DTOs, enums,
+resolver, service, batch jobs, and MongoDB migration scripts. Migrate one workflow
+at a time. Do NOT touch the database yet. Plan first, then wait for approval.
 ```
 
 ### B. Add the appointment domain

@@ -26,16 +26,20 @@
 
 ## 2. Page / Route Mapping
 
+> Canonical model (ADR-006): `Property → Hospital` (catalog); `Doctor`, `Appointment`, `Payment`, `PatientProfile` are **new**.
+
 | Nestar (real-estate) | Medi-care (hospital) | Notes |
 |---|---|---|
-| `/property` (list) | `/doctor` (doctor directory) | listing → provider directory |
-| `/property/detail?id=` | `/doctor/detail?id=` | listing detail → doctor profile |
-| `/mypage` (agent listings) | `/mypage` (doctor profile + schedule) | role-gated section changes |
-| `/agent` (agent directory) | `/doctor` or `/department` | agents → doctors/departments |
+| `/property` (list) | `/hospital` (hospital catalog) | listing → care-room/catalog entity |
+| `/property/detail?id=` | `/hospital/detail?id=` | listing detail → hospital detail |
+| `/agent` (agent directory) | `/doctor` (doctor directory) | **new** domain — doctor profiles |
+| — (none) | `/doctor/detail?id=` | **new** — doctor profile + schedule |
+| `/mypage` (agent listings) | `/mypage` (role-aware: doctor schedule / patient profile) | role-gated; roles `PATIENT/NURSE/DOCTOR/ADMIN` |
 | `/community` (board articles) | `/health-articles` | health content/blog |
 | `/cs` (FAQ/notice) | `/cs` | mostly unchanged |
 | `/account/join`, `/account/login` | same | copy/terminology only |
 | — (none) | `/appointment` (booking + my appointments) | **new** page, no Nestar analog |
+| — (none) | `/payment` (per-appointment) | **new** page |
 
 > Add Next.js `redirects()` in `next.config.js` mapping old paths to new ones for one release.
 
@@ -45,17 +49,18 @@
 
 | Nestar component | Medi-care component | Change type |
 |---|---|---|
-| `PropertyCard` | `DoctorCard` | rename + re-field (price→fee, beds→specialty) |
-| `PropertyList` | `DoctorList` | rename |
-| `PropertyDetail` | `DoctorProfile` | rename + re-field |
-| `PropertyFilter` (type/location/price) | `DoctorFilter` (specialty/department/fee) | enum-driven fields swap |
-| `AgentCard` | `DoctorCard` | merge/rename |
+| `PropertyCard` | `HospitalCard` | rename + re-field |
+| `PropertyList` | `HospitalList` | rename |
+| `PropertyDetail` | `HospitalDetail` | rename + re-field |
+| `PropertyFilter` (type/location/price) | `HospitalFilter` | enum-driven fields swap |
+| `AgentCard` | `DoctorCard` | **new** doctor profile card |
+| — | `DoctorList`, `DoctorProfile`, `DoctorScheduleView` | **new** |
 | `CommunityBoard` | `HealthArticles` | rename, theme |
-| `CommentBox` | `ReviewBox` | rename (reviews) |
-| `LikeButton` / `FavoriteButton` | unchanged behavior, label "Save doctor" | terminology only |
-| `FollowButton` | `FollowDoctorButton` | terminology only |
+| `CommentBox` | `CommentBox` | carry over (no review redesign per AGENTS.md) |
+| `LikeButton` / `FavoriteButton` | unchanged behavior | terminology only |
+| `FollowButton` | `FollowButton` | terminology only |
 | `ChatModal` (socket) | `ChatModal` | unchanged behavior (patient↔doctor) |
-| — | `AppointmentForm`, `AppointmentList` | **new** |
+| — | `AppointmentForm`, `AppointmentList`, `PaymentForm`, `PatientProfileForm` | **new** |
 
 ---
 
@@ -65,16 +70,20 @@
 
 | Current document | Planned document | Type |
 |---|---|---|
-| `GET_PROPERTIES` | `GET_DOCTORS` | query |
-| `GET_PROPERTY` | `GET_DOCTOR` | query |
-| `GET_AGENT_PROPERTIES` | `GET_DOCTOR_PROFILES` | query |
-| `GET_FAVORITES` | `GET_FAVORITES` (same, returns doctors) | query |
+| `GET_PROPERTIES` | `GET_HOSPITALS` | query |
+| `GET_PROPERTY` | `GET_HOSPITAL` | query |
+| `GET_AGENT_PROPERTIES` | `GET_AGENT_HOSPITALS` (admin/owner scope) | query |
+| `GET_FAVORITES` | `GET_FAVORITES` (returns hospitals) | query |
 | `GET_VISITED` | `GET_VISITED` (same) | query |
-| `CREATE_PROPERTY` | `CREATE_DOCTOR` | mutation |
-| `UPDATE_PROPERTY` | `UPDATE_DOCTOR` | mutation |
-| `LIKE_TARGET_PROPERTY` | `LIKE_TARGET_DOCTOR` | mutation |
-| `GET_ALL_PROPERTIES_BY_ADMIN` | `GET_ALL_DOCTORS_BY_ADMIN` | query |
+| `CREATE_PROPERTY` | `CREATE_HOSPITAL` | mutation |
+| `UPDATE_PROPERTY` | `UPDATE_HOSPITAL` | mutation |
+| `LIKE_TARGET_PROPERTY` | `LIKE_TARGET_HOSPITAL` | mutation |
+| `GET_ALL_PROPERTIES_BY_ADMIN` | `GET_ALL_HOSPITALS_BY_ADMIN` | query |
+| — | `GET_DOCTORS`, `GET_DOCTOR`, `CREATE_DOCTOR`, `UPDATE_DOCTOR` | **new** |
+| — | `GET_DOCTOR_SCHEDULE`, `SET_DOCTOR_SCHEDULE` | **new** |
 | — | `BOOK_APPOINTMENT`, `GET_APPOINTMENTS`, `CANCEL_APPOINTMENT` | **new** |
+| — | `CREATE_PAYMENT`, `GET_PAYMENTS` | **new** |
+| — | `GET_PATIENT_PROFILE`, `UPSERT_PATIENT_PROFILE` | **new** |
 
 **Process:**
 1. Update `.graphql`/gql documents to new names + field selections.
@@ -88,9 +97,9 @@
 
 | Real-estate term | Hospital term |
 |---|---|
-| Property / Listing | Doctor / Doctor profile |
+| Property / Listing | Hospital |
 | Agent | Doctor |
-| User | Patient |
+| User | Patient (also Nurse) |
 | Buy / Rent | Book appointment / Consult |
 | Price | Consultation fee |
 | Beds / Rooms / Square | Specialty / Department / Experience |
