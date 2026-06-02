@@ -109,7 +109,7 @@ export class MemberService {
 
 	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
 		const { text } = input.search;
-		const match: T = { memberType: MemberType.AGENT, memberStatus: MemberStatus.ACTIVE };
+		const match: T = { memberType: MemberType.DOCTOR, memberStatus: MemberStatus.ACTIVE };
 		const direction = input?.direction === Direction.ASC ? Direction.ASC : Direction.DESC;
 		const sort: T = { [input?.sort ?? 'createdAt']: direction };
 

@@ -1,67 +1,67 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { HospitalLocation, HospitalStatus, HospitalType } from '../../enums/hospital.enum';
 import { ObjectId } from 'mongoose';
-import { availableOptions, availablePropertySorts } from '../../config';
+import { availableOptions, availableHospitalSorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
 
 @InputType()
-export class PropertyInput {
+export class HospitalInput {
 	@IsNotEmpty()
-	@Field(() => PropertyType)
-	propertyType: PropertyType;
+	@Field(() => HospitalType)
+	hospitalType: HospitalType;
 
 	@IsNotEmpty()
-	@Field(() => PropertyLocation)
-	propertyLocation: PropertyLocation;
-
-	@IsNotEmpty()
-	@Length(3, 100)
-	@Field(() => String)
-	propertyAddress: string;
+	@Field(() => HospitalLocation)
+	hospitalLocation: HospitalLocation;
 
 	@IsNotEmpty()
 	@Length(3, 100)
 	@Field(() => String)
-	propertyTitle: string;
+	hospitalAddress: string;
+
+	@IsNotEmpty()
+	@Length(3, 100)
+	@Field(() => String)
+	hospitalTitle: string;
 
 	@IsNotEmpty()
 	@Field(() => Number)
 	@Min(0)
-	propertyPrice: number;
+	hospitalPrice: number;
 
 	@IsNotEmpty()
 	@Field(() => Number)
-	propertySquare: number;
+	hospitalSquare: number;
 
 	@IsNotEmpty()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int)
-	propertyBeds: number;
+	hospitalBeds: number;
 
 	@IsNotEmpty()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int)
-	propertyRooms: number;
+	hospitalRooms: number;
 
 	@IsNotEmpty()
 	@Field(() => [String])
-	propertyImages: string[];
+	hospitalImages: string[];
 
 	@IsOptional()
 	@Length(5, 500)
 	@Field(() => String, { nullable: true })
-	propertyDesc?: string;
+	hospitalDesc?: string;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	propertyBarter?: boolean;
+	hospitalBarter?: boolean;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	propertyRent?: boolean;
+	hospitalRent?: boolean;
 
 	memberId?: ObjectId;
 
@@ -98,18 +98,18 @@ export class PeriodsRange {
 }
 
 @InputType()
-class PISearch {
+class HISearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
 	memberId: ObjectId;
 
 	@IsOptional()
-	@Field(() => [PropertyLocation], { nullable: true })
-	locationList?: PropertyLocation[];
+	@Field(() => [HospitalLocation], { nullable: true })
+	locationList?: HospitalLocation[];
 
 	@IsOptional()
-	@Field(() => [PropertyType], { nullable: true })
-	typeList?: PropertyType[];
+	@Field(() => [HospitalType], { nullable: true })
+	typeList?: HospitalType[];
 
 	@IsOptional()
 	@Field(() => [Int], { nullable: true })
@@ -142,7 +142,7 @@ class PISearch {
 }
 
 @InputType()
-export class PropertiesInquiry {
+export class HospitalsInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -154,7 +154,7 @@ export class PropertiesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(availablePropertySorts)
+	@IsIn(availableHospitalSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
@@ -163,19 +163,19 @@ export class PropertiesInquiry {
 	direction?: Direction;
 
 	@IsNotEmpty()
-	@Field(() => PISearch)
-	search: PISearch;
+	@Field(() => HISearch)
+	search: HISearch;
 }
 
 @InputType()
-class APISearch {
+class AHISearch {
 	@IsOptional()
-	@Field(() => PropertyStatus, { nullable: true })
-	propertyStatus?: PropertyStatus;
+	@Field(() => HospitalStatus, { nullable: true })
+	hospitalStatus?: HospitalStatus;
 }
 
 @InputType()
-export class AgentPropertiesInquiry {
+export class AgentHospitalsInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -187,7 +187,7 @@ export class AgentPropertiesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(availablePropertySorts)
+	@IsIn(availableHospitalSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
@@ -196,23 +196,23 @@ export class AgentPropertiesInquiry {
 	direction?: Direction;
 
 	@IsNotEmpty()
-	@Field(() => APISearch)
-	search: APISearch;
+	@Field(() => AHISearch)
+	search: AHISearch;
 }
 
 @InputType()
-class ALPISearch {
+class ALHISearch {
 	@IsOptional()
-	@Field(() => PropertyStatus, { nullable: true })
-	propertyStatus?: PropertyStatus;
+	@Field(() => HospitalStatus, { nullable: true })
+	hospitalStatus?: HospitalStatus;
 
 	@IsOptional()
-	@Field(() => [PropertyLocation], { nullable: true })
-	propertyLocationList?: PropertyLocation[];
+	@Field(() => [HospitalLocation], { nullable: true })
+	hospitalLocationList?: HospitalLocation[];
 }
 
 @InputType()
-export class AllPropertiesInquiry {
+export class AllHospitalsInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -224,7 +224,7 @@ export class AllPropertiesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(availablePropertySorts)
+	@IsIn(availableHospitalSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
@@ -233,8 +233,8 @@ export class AllPropertiesInquiry {
 	direction?: Direction;
 
 	@IsNotEmpty()
-	@Field(() => ALPISearch)
-	search: ALPISearch;
+	@Field(() => ALHISearch)
+	search: ALHISearch;
 }
 
 @InputType()

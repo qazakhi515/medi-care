@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { PropertyResolver } from './property.resolver';
-import { PropertyService } from './property.service';
+import { HospitalResolver } from './hospital.resolver';
+import { HospitalService } from './hospital.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import PropertySchema from '../../schemas/Property.model';
+import HospitalSchema from '../../schemas/Hospital.model';
 import { AuthModule } from '../auth/auth.module';
 import { ViewModule } from '../view/view.module';
 import { MemberModule } from '../member/member.module';
@@ -10,13 +10,13 @@ import { LikeModule } from '../like/like.module';
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([{ name: 'Property', schema: PropertySchema }]),
+		MongooseModule.forFeature([{ name: 'Hospital', schema: HospitalSchema }]),
 		AuthModule,
 		ViewModule,
 		forwardRef(() => MemberModule),
 		LikeModule,
 	],
-	providers: [PropertyResolver, PropertyService],
-	exports: [PropertyService],
+	providers: [HospitalResolver, HospitalService],
+	exports: [HospitalService],
 })
-export class PropertyModule {}
+export class HospitalModule {}

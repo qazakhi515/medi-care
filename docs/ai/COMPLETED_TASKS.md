@@ -5,6 +5,50 @@
 
 ---
 
+## Phase 2 — Member roles + 5 healthcare domains (session 2026-06-03)
+
+> Scope: canonical `MemberType` migration + the five new domains keyed off `DOCTOR`
+> (`Doctor`, `DoctorSchedule`, `Appointment`, `Payment`, `PatientProfile`), per `AGENTS.md`.
+> `Property → Hospital` rename intentionally deferred (separate workflow).
+
+### A. MemberType `USER/AGENT/ADMIN → PATIENT/NURSE/DOCTOR/ADMIN`
+| File | Change |
+|---|---|
+| `libs/enums/member.enum.ts` | enum values → `PATIENT/NURSE/DOCTOR/ADMIN` |
+| `schemas/Member.model.ts` | default `USER → PATIENT` |
+| `components/member/member.service.ts` | `getAgents` match `AGENT → DOCTOR` |
+| `components/member/member.resolver.ts` | `checkAuthRoles` roles `USER,AGENT → PATIENT,DOCTOR` |
+| `components/property/property.resolver.ts` | 3× `@Roles(AGENT) → DOCTOR` (mechanical placeholder until Hospital rename) |
+| `medicare-batch/src/batch.service.ts` | 2× `AGENT → DOCTOR` |
+| `medicare-batch/src/migrations/2026-06-rename-member-types.migration.ts` | **new** data migration: `USER→PATIENT`, `AGENT→DOCTOR` on `members` (run once) |
+
+### B. New enums (verbatim from AGENTS.md)
+`doctor.enum.ts` (DoctorStatus, Specialization), `schedule.enum.ts` (ScheduleStatus, DayOfWeek), `appointment.enum.ts` (AppointmentStatus), `payment.enum.ts` (PaymentStatus, PaymentMethod), `patient-profile.enum.ts` (Gender, BloodType); added `DOCTOR` to `ViewGroup`; added 4 `Message` constants.
+
+### C. Five new domains (schema + DTO triad + service + resolver + module each)
+- **doctor** — `doctors.memberId → members._id`; unique `memberId` & `licenseNumber`; view counting (`ViewGroup.DOCTOR`); default status `PENDING`.
+- **doctor-schedule** — `doctorSchedules.doctorId → doctors._id`; unique `{doctorId,dayOfWeek,startTime}`; ownership check via `doctors.memberId`.
+- **appointment** — `patientId → members._id`, `doctorId → doctors._id`; unique `{doctorId,appointmentDate,startTime}` (double-booking guard) + service pre-check; no `hospitalId`.
+- **payment** — `appointmentId`(unique)→appointments, `patientId`→members, `doctorId`→doctors; one-per-appointment; amount derived from doctor `consultationFee`; no `currency`/`transactionId`.
+- **patient-profile** — `patientProfiles.memberId → members._id`; unique `memberId` (one per member).
+
+### D. Wiring & batch
+`components.module.ts` imports all 5 modules; `config.ts` adds sort arrays + `lookupDoctor`/`lookupPatient`; batch adds `batchDoctors` job (cron `50 * * * * *`) + `doctorRank` rollback + `Doctor` schema registration.
+
+### Validation (2026-06-03)
+| Check | Result |
+|---|---|
+| `tsc --noEmit` (api) | ✅ exit 0 |
+| `tsc --noEmit` (batch) | ✅ exit 0 |
+| `npm run build` | ✅ webpack compiled successfully |
+| Runtime boot (`node dist/apps/medicare-api/main.js`) | ✅ all 5 new modules initialized; `GraphQLModule` mapped `/graphql` (code-first schema built, no duplicate-type errors); `Nest application successfully started` (only port 3007 EADDRINUSE from an already-running server — unrelated) |
+| Real-estate leak scan on new files | ✅ none |
+| Duplicate `@InputType` class names | ✅ none (renamed `AISearch→ApptISearch`, `PISearch→PayISearch` to avoid collisions with member/property) |
+
+> **Not yet run:** the `members` data migration (`2026-06-rename-member-types.migration.ts`) against the dev DB, and GraphQL playground smoke tests — pending user go-ahead.
+
+---
+
 ## 1. Repo Analysis (no changes)
 
 - Mapped the monorepo: NestJS GraphQL, two apps (`*-api` @ 3007, `*-batch` @ 3008), Apollo 4, Mongoose 8, JWT, WebSocket chat, batch scheduler.

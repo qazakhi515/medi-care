@@ -1,6 +1,6 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { Cron, Timeout } from '@nestjs/schedule';
-import { BATCH_TOP_AGENTS, BATCH_TOP_PROPERTIES, BATCH_ROLLBACK } from './lib/config';
+import { BATCH_TOP_AGENTS, BATCH_TOP_HOSPITALS, BATCH_ROLLBACK, BATCH_TOP_DOCTORS } from './lib/config';
 import { BatchService } from './batch.service';
 
 @Controller()
@@ -25,12 +25,12 @@ export class BatchController {
 		}
 	}
 
-	@Cron('20 * * * * *', { name: BATCH_TOP_PROPERTIES })
-	public async batchProperties() {
+	@Cron('20 * * * * *', { name: BATCH_TOP_HOSPITALS })
+	public async batchHospitals() {
 		try {
-			this.logger['context'] = BATCH_TOP_PROPERTIES;
+			this.logger['context'] = BATCH_TOP_HOSPITALS;
 			this.logger.debug('EXECUTED!');
-			await this.batchService.batchProperties();
+			await this.batchService.batchHospitals();
 		} catch (err) {
 			this.logger.error(err);
 		}
@@ -42,6 +42,17 @@ export class BatchController {
 			this.logger['context'] = BATCH_TOP_AGENTS;
 			this.logger.debug('EXECUTED!');
 			await this.batchService.batchAgents();
+		} catch (err) {
+			this.logger.error(err);
+		}
+	}
+
+	@Cron('50 * * * * *', { name: BATCH_TOP_DOCTORS })
+	public async batchDoctors() {
+		try {
+			this.logger['context'] = BATCH_TOP_DOCTORS;
+			this.logger.debug('EXECUTED!');
+			await this.batchService.batchDoctors();
 		} catch (err) {
 			this.logger.error(err);
 		}

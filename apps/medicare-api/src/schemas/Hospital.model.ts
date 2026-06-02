@@ -1,91 +1,91 @@
 import { Schema } from 'mongoose';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../libs/enums/property.enum';
+import { HospitalLocation, HospitalStatus, HospitalType } from '../libs/enums/hospital.enum';
 
-const PropertySchema = new Schema(
+const HospitalSchema = new Schema(
 	{
-		propertyType: {
+		hospitalType: {
 			type: String,
-			enum: PropertyType,
+			enum: HospitalType,
 			required: true,
 		},
 
-		propertyStatus: {
+		hospitalStatus: {
 			type: String,
-			enum: PropertyStatus,
-			default: PropertyStatus.ACTIVE,
+			enum: HospitalStatus,
+			default: HospitalStatus.ACTIVE,
 		},
 
-		propertyLocation: {
+		hospitalLocation: {
 			type: String,
-			enum: PropertyLocation,
+			enum: HospitalLocation,
 			required: true,
 		},
 
-		propertyAddress: {
-			type: String,
-			required: true,
-		},
-
-		propertyTitle: {
+		hospitalAddress: {
 			type: String,
 			required: true,
 		},
 
-		propertyPrice: {
+		hospitalTitle: {
+			type: String,
+			required: true,
+		},
+
+		hospitalPrice: {
 			type: Number,
 			required: true,
 		},
 
-		propertySquare: {
+		hospitalSquare: {
 			type: Number,
 			required: true,
 		},
 
-		propertyBeds: {
+		hospitalBeds: {
 			type: Number,
 			required: true,
 		},
 
-		propertyRooms: {
+		hospitalRooms: {
 			type: Number,
 			required: true,
 		},
 
-		propertyViews: {
+		hospitalViews: {
 			type: Number,
 			default: 0,
 		},
 
-		propertyLikes: {
+		hospitalLikes: {
 			type: Number,
 			default: 0,
 		},
 
-		propertyComments: {
+		hospitalComments: {
 			type: Number,
 			default: 0,
 		},
 
-		propertyRank: {
+		hospitalRank: {
 			type: Number,
 			default: 0,
 		},
 
-		propertyImages: {
+		hospitalImages: {
 			type: [String],
 			required: true,
 		},
 
-		propertyDesc: {
+		hospitalDesc: {
 			type: String,
 		},
 
-		propertyBarter: {
+		hospitalBarter: {
 			type: Boolean,
 			default: false,
 		},
 
-		propertyRent: {
+		hospitalRent: {
 			type: Boolean,
 			default: false,
 		},
@@ -108,9 +108,9 @@ const PropertySchema = new Schema(
 			type: Date,
 		},
 	},
-	{ timestamps: true, collection: 'properties' },
+	{ timestamps: true, collection: 'hospitals' },
 );
 
-PropertySchema.index({ propertyType: 1, propertyLocation: 1, propertyTitle: 1, propertyPrice: 1 }, { unique: true });
+HospitalSchema.index({ hospitalType: 1, hospitalLocation: 1, hospitalTitle: 1, hospitalPrice: 1 }, { unique: true });
 
-export default PropertySchema;
+export default HospitalSchema;

@@ -1,71 +1,71 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { HospitalLocation, HospitalStatus, HospitalType } from '../../enums/hospital.enum';
 import { ObjectId } from 'mongoose';
 
 @InputType()
-export class PropertyUpdate {
+export class HospitalUpdate {
 	@IsNotEmpty()
 	@Field(() => String)
 	_id: ObjectId;
 
 	@IsOptional()
-	@Field(() => PropertyType, { nullable: true })
-	propertyType?: PropertyType;
+	@Field(() => HospitalType, { nullable: true })
+	hospitalType?: HospitalType;
 
 	@IsOptional()
-	@Field(() => PropertyStatus, { nullable: true })
-	propertyStatus?: PropertyStatus;
+	@Field(() => HospitalStatus, { nullable: true })
+	hospitalStatus?: HospitalStatus;
 
 	@IsOptional()
-	@Field(() => PropertyLocation, { nullable: true })
-	propertyLocation?: PropertyLocation;
-
-	@IsOptional()
-	@Length(3, 100)
-	@Field(() => String, { nullable: true })
-	propertyAddress?: string;
+	@Field(() => HospitalLocation, { nullable: true })
+	hospitalLocation?: HospitalLocation;
 
 	@IsOptional()
 	@Length(3, 100)
 	@Field(() => String, { nullable: true })
-	propertyTitle?: string;
+	hospitalAddress?: string;
+
+	@IsOptional()
+	@Length(3, 100)
+	@Field(() => String, { nullable: true })
+	hospitalTitle?: string;
 
 	@IsOptional()
 	@Field(() => Number, { nullable: true })
-	propertyPrice?: number;
+	hospitalPrice?: number;
 
 	@IsOptional()
 	@Field(() => Number, { nullable: true })
-	propertySquare?: number;
+	hospitalSquare?: number;
 	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int, { nullable: true })
-	propertyBeds?: number;
+	hospitalBeds?: number;
 
 	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int, { nullable: true })
-	propertyRooms?: number;
+	hospitalRooms?: number;
 
 	@IsOptional()
 	@Field(() => [String], { nullable: true })
-	propertyImages?: string[];
+	hospitalImages?: string[];
 
 	@IsOptional()
 	@Length(5, 500)
 	@Field(() => String, { nullable: true })
-	propertyDesc?: string;
+	hospitalDesc?: string;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	propertyBarter?: boolean;
+	hospitalBarter?: boolean;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	propertyRent?: boolean;
+	hospitalRent?: boolean;
 
 	soldAt?: Date;
 

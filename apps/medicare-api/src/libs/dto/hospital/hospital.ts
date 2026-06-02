@@ -1,64 +1,64 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { HospitalLocation, HospitalStatus, HospitalType } from '../../enums/hospital.enum';
 import { Member, TotalCounter } from '../member/member';
 import { MeLiked } from '../like/like';
 
 @ObjectType()
-export class Property {
+export class Hospital {
 	@Field(() => String)
 	_id: ObjectId;
 
-	@Field(() => PropertyType)
-	propertyType: PropertyType;
+	@Field(() => HospitalType)
+	hospitalType: HospitalType;
 
-	@Field(() => PropertyStatus)
-	propertyStatus: PropertyStatus;
+	@Field(() => HospitalStatus)
+	hospitalStatus: HospitalStatus;
 
-	@Field(() => PropertyLocation)
-	propertyLocation: PropertyLocation;
-
-	@Field(() => String)
-	propertyAddress: string;
+	@Field(() => HospitalLocation)
+	hospitalLocation: HospitalLocation;
 
 	@Field(() => String)
-	propertyTitle: string;
+	hospitalAddress: string;
+
+	@Field(() => String)
+	hospitalTitle: string;
 
 	@Field(() => Number)
-	propertyPrice: number;
+	hospitalPrice: number;
 
 	@Field(() => Number)
-	propertySquare: number;
+	hospitalSquare: number;
 
 	@Field(() => Int)
-	propertyBeds: number;
+	hospitalBeds: number;
 
 	@Field(() => Int)
-	propertyRooms: number;
+	hospitalRooms: number;
 
 	@Field(() => Int)
-	propertyViews: number;
+	hospitalViews: number;
 
 	@Field(() => Int)
-	propertyLikes: number;
+	hospitalLikes: number;
 
 	@Field(() => Int)
-	propertyComments: number;
+	hospitalComments: number;
 
 	@Field(() => Int)
-	propertyRank: number;
+	hospitalRank: number;
 
 	@Field(() => [String])
-	propertyImages: string[];
+	hospitalImages: string[];
 
 	@Field(() => String, { nullable: true })
-	propertyDesc?: string;
+	hospitalDesc?: string;
 
 	@Field(() => Boolean)
-	propertyBarter: boolean;
+	hospitalBarter: boolean;
 
 	@Field(() => Boolean)
-	propertyRent: boolean;
+	hospitalRent: boolean;
 
 	@Field(() => String)
 	memberId: ObjectId;
@@ -88,9 +88,9 @@ export class Property {
 }
 
 @ObjectType()
-export class Properties {
-	@Field(() => [Property])
-	list: Property[];
+export class Hospitals {
+	@Field(() => [Hospital])
+	list: Hospital[];
 
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];

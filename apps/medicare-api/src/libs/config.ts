@@ -3,17 +3,22 @@ import { ObjectId } from 'bson';
 export const availableAgentSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank'];
 export const availableMemberSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews'];
 
-export const availableOptions = ['propertyBarter', 'propertyRent'];
-export const availablePropertySorts = [
+export const availableOptions = ['hospitalBarter', 'hospitalRent'];
+export const availableHospitalSorts = [
 	'createdAt',
 	'updatedAt',
-	'propertyLikes',
-	'propertyViews',
-	'propertyRank',
-	'propertyPrice',
+	'hospitalLikes',
+	'hospitalViews',
+	'hospitalRank',
+	'hospitalPrice',
 ];
 export const availableBoardArticle = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
+
+export const availableDoctorSorts = ['createdAt', 'updatedAt', 'doctorViews', 'doctorRank', 'consultationFee', 'experienceYears'];
+export const availableScheduleSorts = ['createdAt', 'updatedAt', 'dayOfWeek', 'startTime'];
+export const availableAppointmentSorts = ['createdAt', 'updatedAt', 'appointmentDate', 'startTime'];
+export const availablePaymentSorts = ['createdAt', 'updatedAt', 'paidAt', 'amount'];
 
 // IMAGE CONFIGURATION
 import { v4 as uuidv4 } from 'uuid';
@@ -106,6 +111,24 @@ export const lookupMember = {
 	},
 };
 
+export const lookupPatient = {
+	$lookup: {
+		from: 'members',
+		localField: 'patientId',
+		foreignField: '_id',
+		as: 'patientData',
+	},
+};
+
+export const lookupDoctor = {
+	$lookup: {
+		from: 'doctors',
+		localField: 'doctorId',
+		foreignField: '_id',
+		as: 'doctorData',
+	},
+};
+
 export const lookupFollowingData = {
 	$lookup: {
 		from: 'members',
@@ -127,17 +150,17 @@ export const lookupFollowerData = {
 export const lookupFavorite = {
 	$lookup: {
 		from: 'members',
-		localField: 'favoriteProperty.memberId',
+		localField: 'favoriteHospital.memberId',
 		foreignField: '_id',
-		as: 'favoriteProperty.memberData',
+		as: 'favoriteHospital.memberData',
 	},
 };
 
 export const lookupVisit = {
 	$lookup: {
 		from: 'members',
-		localField: 'visitedProperty.memberId ',
+		localField: 'visitedHospital.memberId ',
 		foreignField: '_id',
-		as: 'visitedProperty.memberData',
+		as: 'visitedHospital.memberData',
 	},
 };

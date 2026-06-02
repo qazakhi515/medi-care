@@ -20,6 +20,10 @@ export enum Message {
 	NOT_ALLOWED_REQUEST = 'Not Allowed Request!',
 	PROVIDE_ALLOWED_FORMAT = 'Please provide jpg, jpeg or png images!',
 	SELF_SUBSCRIPTION_DENIED = 'Self subscription is denied!',
+	DOCTOR_PROFILE_REQUIRED = 'A doctor profile is required for this action!',
+	BOOKING_SLOT_TAKEN = 'This doctor time slot is already booked!',
+	PAYMENT_ALREADY_EXISTS = 'A payment already exists for this appointment!',
+	PROFILE_ALREADY_EXISTS = 'A patient profile already exists for this member!',
 }
 
 export enum Direction {

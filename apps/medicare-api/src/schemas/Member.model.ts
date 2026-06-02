@@ -6,7 +6,7 @@ const MemberSchema = new Schema(
 		memberType: {
 			type: String,
 			enum: MemberType,
-			default: MemberType.USER,
+			default: MemberType.PATIENT,
 		},
 
 		memberStatus: {
@@ -57,7 +57,7 @@ const MemberSchema = new Schema(
 			type: String,
 		},
 
-		memberProperties: {
+		memberHospitals: {
 			type: Number,
 			default: 0,
 		},
