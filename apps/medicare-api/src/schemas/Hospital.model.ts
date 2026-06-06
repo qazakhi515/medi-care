@@ -38,12 +38,12 @@ const HospitalSchema = new Schema(
 
 		hospitalSquare: {
 			type: Number,
-			required: true,
+			required: false,
 		},
 
 		hospitalBeds: {
 			type: Number,
-			required: true,
+			required: false,
 		},
 
 		hospitalRooms: {
@@ -94,10 +94,6 @@ const HospitalSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			required: true,
 			ref: 'Member',
-		},
-
-		soldAt: {
-			type: Date,
 		},
 
 		deletedAt: {

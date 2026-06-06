@@ -21,6 +21,12 @@ export class DoctorService {
 	) {}
 
 	public async createDoctor(input: DoctorInput): Promise<Doctor> {
+		const existingDoctor = await this.doctorModel.findOne({ memberId: input.memberId }).lean().exec();
+		if (existingDoctor) throw new BadRequestException(Message.DOCTOR_PROFILE_ALREADY_EXISTS);
+
+		const usedLicense = await this.doctorModel.findOne({ licenseNumber: input.licenseNumber }).lean().exec();
+		if (usedLicense) throw new BadRequestException(Message.LICENSE_ALREADY_EXISTS);
+
 		try {
 			return await this.doctorModel.create(input);
 		} catch (err) {

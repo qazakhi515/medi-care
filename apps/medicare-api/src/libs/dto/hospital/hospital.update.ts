@@ -67,8 +67,6 @@ export class HospitalUpdate {
 	@Field(() => Boolean, { nullable: true })
 	hospitalRent?: boolean;
 
-	soldAt?: Date;
-
 	deletedAt?: Date;
 
 	@IsOptional()

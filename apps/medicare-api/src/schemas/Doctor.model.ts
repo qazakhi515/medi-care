@@ -12,7 +12,7 @@ const DoctorSchema = new Schema(
 		doctorStatus: {
 			type: String,
 			enum: DoctorStatus,
-			default: DoctorStatus.PENDING,
+			default: DoctorStatus.ACTIVE,
 		},
 
 		specialization: {

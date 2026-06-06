@@ -23,7 +23,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 export class HospitalResolver {
 	constructor(private readonly hospitalService: HospitalService) {}
 
-	@Roles(MemberType.DOCTOR)
+	@Roles(MemberType.DOCTOR, MemberType.NURSE)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Hospital)
 	public async createHospital(
@@ -46,7 +46,7 @@ export class HospitalResolver {
 		return await this.hospitalService.getHospital(memberId, hospitalId);
 	}
 
-	@Roles(MemberType.DOCTOR)
+	@Roles(MemberType.DOCTOR, MemberType.NURSE)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => Hospital)
 	public async updateHospital(
@@ -88,7 +88,7 @@ export class HospitalResolver {
 		return await this.hospitalService.getVisited(memberId, input);
 	}
 
-	@Roles(MemberType.DOCTOR)
+	@Roles(MemberType.DOCTOR, MemberType.NURSE)
 	@UseGuards(RolesGuard)
 	@Query((returns) => Hospitals)
 	public async getAgentHospitals(
@@ -112,7 +112,7 @@ export class HospitalResolver {
 
 	// Admin
 
-	@Roles(MemberType.ADMIN)
+	@Roles(MemberType.NURSE)
 	@UseGuards(RolesGuard)
 	@Query((returns) => Hospitals)
 	public async getAllHospitalsByAdmin(
@@ -123,7 +123,7 @@ export class HospitalResolver {
 		return await this.hospitalService.getAllHospitalsByAdmin(input);
 	}
 
-	@Roles(MemberType.ADMIN)
+	@Roles(MemberType.NURSE)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => Hospital)
 	public async updateHospitalByAdmin(@Args('input') input: HospitalUpdate): Promise<Hospital> {
@@ -132,7 +132,7 @@ export class HospitalResolver {
 		return await this.hospitalService.updateHospitalByAdmin(input);
 	}
 
-	@Roles(MemberType.ADMIN)
+	@Roles(MemberType.NURSE)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => Hospital)
 	public async removeHospitalByAdmin(@Args('hospitalId') input: string): Promise<Hospital> {

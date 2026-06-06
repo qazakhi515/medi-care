@@ -24,6 +24,8 @@ export enum Message {
 	BOOKING_SLOT_TAKEN = 'This doctor time slot is already booked!',
 	PAYMENT_ALREADY_EXISTS = 'A payment already exists for this appointment!',
 	PROFILE_ALREADY_EXISTS = 'A patient profile already exists for this member!',
+	DOCTOR_PROFILE_ALREADY_EXISTS = 'A doctor profile already exists for this member!',
+	LICENSE_ALREADY_EXISTS = 'This license number is already in use!',
 }
 
 export enum Direction {

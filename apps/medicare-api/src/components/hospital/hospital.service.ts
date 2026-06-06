@@ -81,8 +81,7 @@ export class HospitalService {
 			hospitalStatus: HospitalStatus.ACTIVE,
 		};
 
-		if (hospitalStatus === HospitalStatus.SOLD) input.soldAt = new Date();
-		else if (hospitalStatus === HospitalStatus.DELETE) input.deletedAt = new Date();
+		if (hospitalStatus === HospitalStatus.DELETE) input.deletedAt = new Date();
 
 		const result = await this.hospitalModel
 			.findOneAndUpdate(search, input, {
@@ -92,7 +91,7 @@ export class HospitalService {
 
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-		if (input.soldAt || input.deletedAt) {
+		if (input.deletedAt) {
 			await this.memberService.memberStatsEditor({
 				_id: memberId,
 				targetKey: 'memberHospitals',
@@ -261,8 +260,7 @@ export class HospitalService {
 			hospitalStatus: HospitalStatus.ACTIVE,
 		};
 
-		if (hospitalStatus === HospitalStatus.SOLD) input.soldAt = new Date();
-		else if (hospitalStatus === HospitalStatus.DELETE) input.deletedAt = new Date();
+		if (hospitalStatus === HospitalStatus.DELETE) input.deletedAt = new Date();
 
 		const result = await this.hospitalModel
 			.findOneAndUpdate(search, input, {
@@ -272,7 +270,7 @@ export class HospitalService {
 
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-		if (input.soldAt || input.deletedAt) {
+		if (input.deletedAt) {
 			await this.memberService.memberStatsEditor({
 				_id: result.memberId,
 				targetKey: 'memberHospitals',

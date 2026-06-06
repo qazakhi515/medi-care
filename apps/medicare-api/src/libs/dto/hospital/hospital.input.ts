@@ -30,15 +30,15 @@ export class HospitalInput {
 	@Min(0)
 	hospitalPrice: number;
 
-	@IsNotEmpty()
-	@Field(() => Number)
-	hospitalSquare: number;
+	@IsOptional()
+	@Field(() => Number, { nullable: true })
+	hospitalSquare?: number;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@IsInt()
 	@Min(1)
-	@Field(() => Int)
-	hospitalBeds: number;
+	@Field(() => Int, { nullable: true })
+	hospitalBeds?: number;
 
 	@IsNotEmpty()
 	@IsInt()

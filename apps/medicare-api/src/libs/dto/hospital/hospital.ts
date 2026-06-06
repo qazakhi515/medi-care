@@ -27,11 +27,11 @@ export class Hospital {
 	@Field(() => Number)
 	hospitalPrice: number;
 
-	@Field(() => Number)
-	hospitalSquare: number;
+	@Field(() => Number, { nullable: true })
+	hospitalSquare?: number;
 
-	@Field(() => Int)
-	hospitalBeds: number;
+	@Field(() => Int, { nullable: true })
+	hospitalBeds?: number;
 
 	@Field(() => Int)
 	hospitalRooms: number;
@@ -62,9 +62,6 @@ export class Hospital {
 
 	@Field(() => String)
 	memberId: ObjectId;
-
-	@Field(() => Date, { nullable: true })
-	soldAt?: Date;
 
 	@Field(() => Date, { nullable: true })
 	deletedAt?: Date;

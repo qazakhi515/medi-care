@@ -1,9 +1,23 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum HospitalType {
-	APARTMENT = 'APARTMENT',
-	VILLA = 'VILLA',
-	HOUSE = 'HOUSE',
+	GENERAL = 'GENERAL',
+	DENTAL = 'DENTAL',
+	PEDIATRIC = 'PEDIATRIC',
+	SURGICAL = 'SURGICAL',
+	CARDIOLOGY = 'CARDIOLOGY',
+	ORTHOPEDIC = 'ORTHOPEDIC',
+	DERMATOLOGY = 'DERMATOLOGY',
+	UROLOGY = 'UROLOGY',
+	OPHTHALMOLOGY = 'OPHTHALMOLOGY',
+	GYNECOLOGY = 'GYNECOLOGY',
+	PHYSIOTHERAPY = 'PHYSIOTHERAPY',
+	RADIOLOGY = 'RADIOLOGY',
+	NEUROLOGY = 'NEUROLOGY',
+	ONCOLOGY = 'ONCOLOGY',
+	ENDOCRINOLOGY = 'ENDOCRINOLOGY',
+	NEPHROLOGY = 'NEPHROLOGY',
+	OTHER = 'OTHER',
 }
 registerEnumType(HospitalType, {
 	name: 'HospitalType',
@@ -11,7 +25,6 @@ registerEnumType(HospitalType, {
 
 export enum HospitalStatus {
 	ACTIVE = 'ACTIVE',
-	SOLD = 'SOLD',
 	DELETE = 'DELETE',
 }
 registerEnumType(HospitalStatus, {
