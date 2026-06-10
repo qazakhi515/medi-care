@@ -2,6 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { DoctorStatus, Specialization } from '../../enums/doctor.enum';
 import { Member, TotalCounter } from '../member/member';
+import { Hospital } from '../hospital/hospital';
 
 @ObjectType()
 export class Doctor {
@@ -10,6 +11,9 @@ export class Doctor {
 
 	@Field(() => String)
 	memberId: ObjectId;
+
+	@Field(() => String, { nullable: true })
+	hospitalId?: ObjectId;
 
 	@Field(() => DoctorStatus)
 	doctorStatus: DoctorStatus;
@@ -50,6 +54,9 @@ export class Doctor {
 	// from aggregate //
 	@Field(() => Member, { nullable: true })
 	memberData?: Member;
+
+	@Field(() => Hospital, { nullable: true })
+	hospitalData?: Hospital;
 }
 
 @ObjectType()

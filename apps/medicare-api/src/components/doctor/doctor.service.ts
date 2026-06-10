@@ -10,15 +10,22 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
-import { lookupMember } from '../../libs/config';
+import { lookupHospital, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { Hospital } from '../../libs/dto/hospital/hospital';
 
 @Injectable()
 export class DoctorService {
 	constructor(
 		@InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
+		@InjectModel('Hospital') private readonly hospitalModel: Model<Hospital>,
 		private readonly memberService: MemberService,
 		private readonly viewService: ViewService,
 	) {}
+
+	private async assertHospitalExists(hospitalId: ObjectId): Promise<void> {
+		const hospital = await this.hospitalModel.findOne({ _id: hospitalId }).lean().exec();
+		if (!hospital) throw new BadRequestException(Message.NO_DATA_FOUND);
+	}
 
 	public async createDoctor(input: DoctorInput): Promise<Doctor> {
 		const existingDoctor = await this.doctorModel.findOne({ memberId: input.memberId }).lean().exec();
@@ -26,6 +33,11 @@ export class DoctorService {
 
 		const usedLicense = await this.doctorModel.findOne({ licenseNumber: input.licenseNumber }).lean().exec();
 		if (usedLicense) throw new BadRequestException(Message.LICENSE_ALREADY_EXISTS);
+
+		if (input.hospitalId) {
+			input.hospitalId = shapeIntoMongoObjectId(input.hospitalId);
+			await this.assertHospitalExists(input.hospitalId);
+		}
 
 		try {
 			return await this.doctorModel.create(input);
@@ -61,9 +73,10 @@ export class DoctorService {
 		const match: T = { doctorStatus: DoctorStatus.ACTIVE };
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
-		const { doctorStatus, specializationList, text } = input.search;
+		const { doctorStatus, specializationList, hospitalId, text } = input.search;
 		if (doctorStatus) match.doctorStatus = doctorStatus;
 		if (specializationList && specializationList.length) match.specialization = { $in: specializationList };
+		if (hospitalId) match.hospitalId = shapeIntoMongoObjectId(hospitalId);
 		if (text) match.licenseNumber = { $regex: new RegExp(text, 'i') };
 
 		const result = await this.doctorModel
@@ -77,6 +90,8 @@ export class DoctorService {
 							{ $limit: input.limit },
 							lookupMember,
 							{ $unwind: '$memberData' },
+							lookupHospital,
+							{ $unwind: { path: '$hospitalData', preserveNullAndEmptyArrays: true } },
 						],
 						metaCounter: [{ $count: 'total' }],
 					},
@@ -97,6 +112,11 @@ export class DoctorService {
 		};
 
 		if (doctorStatus === DoctorStatus.DELETE) input.deletedAt = new Date();
+
+		if (input.hospitalId) {
+			input.hospitalId = shapeIntoMongoObjectId(input.hospitalId);
+			await this.assertHospitalExists(input.hospitalId);
+		}
 
 		const result = await this.doctorModel.findOneAndUpdate(search, input, { new: true }).exec();
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);

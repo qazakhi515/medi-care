@@ -44,5 +44,9 @@ export class DoctorUpdate {
 	@Field(() => String, { nullable: true })
 	certificates?: string;
 
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	hospitalId?: ObjectId;
+
 	deletedAt?: Date;
 }

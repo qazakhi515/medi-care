@@ -129,6 +129,15 @@ export const lookupDoctor = {
 	},
 };
 
+export const lookupHospital = {
+	$lookup: {
+		from: 'hospitals',
+		localField: 'hospitalId',
+		foreignField: '_id',
+		as: 'hospitalData',
+	},
+};
+
 export const lookupFollowingData = {
 	$lookup: {
 		from: 'members',

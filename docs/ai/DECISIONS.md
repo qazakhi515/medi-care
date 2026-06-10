@@ -112,3 +112,22 @@
 **Risks:** The product brand is written "Medi-care" (hyphenated) in UI strings, so identifiers (`medicare`) and brand ("Medi-care") differ in spelling. Accepted and documented.
 
 **Alternatives:** Rename folders to `medi-care-*` to match the brand exactly — rejected: a second large rename with no functional benefit. Revisit only if a hard naming requirement emerges.
+
+---
+
+## ADR-009 — Add `doctors.hospitalId` (explicitly overrides the "no hospitalId on doctors" rule)
+
+**Decision:** Introduce a single, **optional** foreign key `doctors.hospitalId → hospitals._id` linking a doctor to the hospital they work at. This is the explicit migration that AGENTS.md (ER Model Rules) permitted: *"Do not add `hospitalId` to doctors or appointments **unless a later migration explicitly changes this decision.**"* This ADR is that change — **for doctors only**.
+
+**Why:** The hospital detail UI must list "doctors at this hospital," which was impossible with no relation. The existing ER uses single ObjectId references on the owning entity (`doctors.memberId`, `doctorSchedules.doctorId`, `appointments.doctorId`); a `doctors.hospitalId` ref is the consistent, minimal way to model it.
+
+**Scope / shape:**
+- Single FK (one hospital per doctor), **optional** → existing doctors keep working, no data migration required.
+- Set by the doctor via `createDoctor` / `updateDoctor`; validated to reference an existing hospital.
+- `getDoctors` gains a `search.hospitalId` filter; aggregation adds `lookupHospital` (+ preserve-null unwind) exposing `hospitalData`.
+
+**Explicitly unchanged:** Appointments remain **doctor-based** — the rule against `hospitalId` on **appointments** still stands. No `currency`/`transactionId` on payments; no reviews/notification changes. No `doctor` id stored on members (ownership still via `doctors.memberId`).
+
+**Risks:** A doctor can belong to only one hospital (no multi-affiliation). If many-to-many is later required, a follow-up migration (array or join collection) supersedes this.
+
+**Alternatives:** Many-to-many join collection — rejected for now: heavier and diverges from the single-FK pattern used everywhere else.

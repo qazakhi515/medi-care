@@ -38,6 +38,10 @@ export class DoctorInput {
 	@Field(() => String, { nullable: true })
 	certificates?: string;
 
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	hospitalId?: ObjectId;
+
 	memberId?: ObjectId;
 }
 
@@ -50,6 +54,10 @@ class DISearch {
 	@IsOptional()
 	@Field(() => [Specialization], { nullable: true })
 	specializationList?: Specialization[];
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	hospitalId?: ObjectId;
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })

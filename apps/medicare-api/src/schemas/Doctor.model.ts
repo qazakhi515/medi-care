@@ -9,6 +9,11 @@ const DoctorSchema = new Schema(
 			ref: 'Member',
 		},
 
+		hospitalId: {
+			type: Schema.Types.ObjectId,
+			ref: 'Hospital',
+		},
+
 		doctorStatus: {
 			type: String,
 			enum: DoctorStatus,
@@ -63,5 +68,6 @@ const DoctorSchema = new Schema(
 
 DoctorSchema.index({ memberId: 1 }, { unique: true });
 DoctorSchema.index({ licenseNumber: 1 }, { unique: true });
+DoctorSchema.index({ hospitalId: 1 });
 
 export default DoctorSchema;

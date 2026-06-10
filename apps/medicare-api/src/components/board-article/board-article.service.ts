@@ -125,9 +125,8 @@ export class BoardArticleService {
 			])
 			.exec();
 
-		if (!result.length || result[0].list.length === 0) {
-			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-		}
+		// Bo'sh ro'yxat xato emas: home page'da popup bermaslik uchun bo'sh natija qaytaramiz
+		if (!result.length) return { list: [], metaCounter: [] };
 
 		return result[0];
 	}
@@ -184,9 +183,8 @@ export class BoardArticleService {
 			])
 			.exec();
 
-		if (!result.length || result[0].list.length === 0) {
-			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-		}
+		// Bo'sh ro'yxat xato emas: home page'da popup bermaslik uchun bo'sh natija qaytaramiz
+		if (!result.length) return { list: [], metaCounter: [] };
 
 		return result[0];
 	}

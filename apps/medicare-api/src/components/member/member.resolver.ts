@@ -13,7 +13,7 @@ import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { getSerialForImage, shapeIntoMongoObjectId, validMimeTypes } from '../../libs/config';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
-import { createWriteStream } from 'fs';
+import { createWriteStream, mkdirSync } from 'fs';
 import { Message } from '../../libs/enums/common.enum';
 
 @Resolver()
@@ -119,6 +119,7 @@ export class MemberResolver {
 
 		const imageName = getSerialForImage(filename);
 		const url = `uploads/${target}/${imageName}`;
+		mkdirSync(`uploads/${target}`, { recursive: true });
 		const stream = createReadStream();
 
 		const result = await new Promise((resolve, reject) => {
@@ -151,6 +152,7 @@ export class MemberResolver {
 
 				const imageName = getSerialForImage(filename);
 				const url = `uploads/${target}/${imageName}`;
+				mkdirSync(`uploads/${target}`, { recursive: true });
 				const stream = createReadStream();
 
 				const result = await new Promise((resolve, reject) => {
