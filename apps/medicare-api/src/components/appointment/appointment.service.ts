@@ -10,12 +10,15 @@ import { AppointmentStatus } from '../../libs/enums/appointment.enum';
 import { DoctorStatus } from '../../libs/enums/doctor.enum';
 import { T } from '../../libs/types/common';
 import { lookupDoctor, lookupPatient, shapeIntoMongoObjectId } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class AppointmentService {
 	constructor(
 		@InjectModel('Appointment') private readonly appointmentModel: Model<Appointment>,
 		@InjectModel('Doctor') private readonly doctorModel: Model<Doctor>,
+		private readonly notificationService: NotificationService,
 	) {}
 
 	public async createAppointment(input: AppointmentInput): Promise<Appointment> {
@@ -34,12 +37,38 @@ export class AppointmentService {
 			.exec();
 		if (slotTaken) throw new BadRequestException(Message.BOOKING_SLOT_TAKEN);
 
+		let appointment: Appointment;
 		try {
-			return await this.appointmentModel.create(input);
+			appointment = await this.appointmentModel.create(input);
 		} catch (err) {
 			console.log('Error, Service.model:', err);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
+
+		// Notifications: bemorga (tasdiq) + doktorga (yangi uchrashuv).
+		// Notification xatosi band qilishni buzmasligi uchun alohida try/catch.
+		try {
+			await this.notificationService.createNotification({
+				notificationType: NotificationType.APPOINTMENT,
+				notificationGroup: NotificationGroup.APPOINTMENT,
+				notificationTitle: 'New appointment booked',
+				notificationDesc: `A new appointment was booked for ${appointment.startTime} - ${appointment.endTime}.`,
+				authorId: input.patientId,
+				receiverId: doctor.memberId,
+			});
+			await this.notificationService.createNotification({
+				notificationType: NotificationType.APPOINTMENT,
+				notificationGroup: NotificationGroup.APPOINTMENT,
+				notificationTitle: 'Appointment requested',
+				notificationDesc: `Your appointment for ${appointment.startTime} - ${appointment.endTime} has been requested.`,
+				authorId: input.patientId,
+				receiverId: input.patientId,
+			});
+		} catch (err) {
+			console.log('Error, appointment notification:', err);
+		}
+
+		return appointment;
 	}
 
 	public async getAppointment(memberId: ObjectId, appointmentId: ObjectId): Promise<Appointment> {

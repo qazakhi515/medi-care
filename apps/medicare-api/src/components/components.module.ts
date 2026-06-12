@@ -12,6 +12,7 @@ import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { PaymentModule } from './payment/payment.module';
 import { PatientProfileModule } from './patient-profile/patient-profile.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { PatientProfileModule } from './patient-profile/patient-profile.module';
 		AppointmentModule,
 		PaymentModule,
 		PatientProfileModule,
+		NotificationModule,
 	],
 })
 export class ComponentsModule {}

@@ -5,6 +5,7 @@ import { AppointmentService } from './appointment.service';
 import AppointmentSchema from '../../schemas/Appointment.model';
 import DoctorSchema from '../../schemas/Doctor.model';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
 	imports: [
@@ -13,6 +14,7 @@ import { AuthModule } from '../auth/auth.module';
 			{ name: 'Doctor', schema: DoctorSchema },
 		]),
 		AuthModule,
+		NotificationModule,
 	],
 	providers: [AppointmentResolver, AppointmentService],
 	exports: [AppointmentService],
