@@ -1,7 +1,14 @@
 import { Mutation, Resolver, Query, Args } from '@nestjs/graphql';
 import { MemberService } from './member.service';
 import { InternalServerErrorException, UseGuards } from '@nestjs/common';
-import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
+import {
+	AgentsInquiry,
+	ForgotPasswordInput,
+	LoginInput,
+	MemberInput,
+	MembersInquiry,
+	ResetPasswordInput,
+} from '../../libs/dto/member/member.input';
 import { Member, Members } from '../../libs/dto/member/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
@@ -30,6 +37,18 @@ export class MemberResolver {
 	public async login(@Args('input') input: LoginInput): Promise<Member> {
 		console.log('Mutation: login');
 		return await this.memberService.login(input);
+	}
+
+	@Mutation(() => Boolean)
+	public async forgotPassword(@Args('input') input: ForgotPasswordInput): Promise<boolean> {
+		console.log('Mutation: forgotPassword');
+		return await this.memberService.forgotPassword(input);
+	}
+
+	@Mutation(() => Boolean)
+	public async resetPassword(@Args('input') input: ResetPasswordInput): Promise<boolean> {
+		console.log('Mutation: resetPassword');
+		return await this.memberService.resetPassword(input);
 	}
 
 	@UseGuards(AuthGuard)

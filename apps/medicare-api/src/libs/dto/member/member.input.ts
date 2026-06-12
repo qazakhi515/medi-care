@@ -43,6 +43,30 @@ export class LoginInput {
 	memberPassword: string;
 }
 @InputType()
+export class ForgotPasswordInput {
+	@IsNotEmpty()
+	@Field(() => String)
+	memberPhone: string;
+}
+
+@InputType()
+export class ResetPasswordInput {
+	@IsNotEmpty()
+	@Field(() => String)
+	memberPhone: string;
+
+	@IsNotEmpty()
+	@Length(4, 6)
+	@Field(() => String)
+	otpCode: string;
+
+	@IsNotEmpty()
+	@Length(5, 12)
+	@Field(() => String)
+	memberPassword: string;
+}
+
+@InputType()
 class AISearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })

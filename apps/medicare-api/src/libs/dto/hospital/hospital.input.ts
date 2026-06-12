@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, Length, Min, ValidateIf } from 'class-validator';
 import { HospitalLocation, HospitalStatus, HospitalType } from '../../enums/hospital.enum';
 import { ObjectId } from 'mongoose';
 import { availableOptions, availableHospitalSorts } from '../../config';
@@ -35,22 +35,19 @@ export class HospitalInput {
 	hospitalSquare?: number;
 
 	@IsOptional()
-	@IsInt()
-	@Min(1)
 	@Field(() => Int, { nullable: true })
 	hospitalBeds?: number;
 
-	@IsNotEmpty()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int)
-	hospitalRooms: number;
+	@IsOptional()
+	@Field(() => Int, { nullable: true })
+	hospitalRooms?: number;
 
 	@IsNotEmpty()
 	@Field(() => [String])
 	hospitalImages: string[];
 
 	@IsOptional()
+	@ValidateIf((o) => o.hospitalDesc !== '')
 	@Length(5, 500)
 	@Field(() => String, { nullable: true })
 	hospitalDesc?: string;

@@ -26,6 +26,9 @@ export enum Message {
 	PROFILE_ALREADY_EXISTS = 'A patient profile already exists for this member!',
 	DOCTOR_PROFILE_ALREADY_EXISTS = 'A doctor profile already exists for this member!',
 	LICENSE_ALREADY_EXISTS = 'This license number is already in use!',
+	NO_MEMBER_PHONE = 'No member with that phone number!',
+	WRONG_OTP = 'Invalid verification code!',
+	OTP_EXPIRED = 'Verification code has expired!',
 }
 
 export enum Direction {

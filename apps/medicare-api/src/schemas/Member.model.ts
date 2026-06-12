@@ -115,6 +115,16 @@ const MemberSchema = new Schema(
 		deletedAt: {
 			type: Date,
 		},
+
+		resetOtp: {
+			type: String,
+			select: false,
+		},
+
+		resetOtpExpiresAt: {
+			type: Date,
+			select: false,
+		},
 	},
 	{ timestamps: true, collection: 'members' },
 );
