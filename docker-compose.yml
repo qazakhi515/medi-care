@@ -1,0 +1,32 @@
+services:
+  medi-care-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: medi-care-api
+    container_name: medi-care-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3007:3007"
+    volumes:
+      - uploads:/app/uploads
+    command: ["node", "dist/apps/medicare-api/main"]
+
+  # Optional: background batch worker. Uncomment to run it too.
+  # medi-care-batch:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   image: medi-care-api
+  #   container_name: medi-care-batch
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "3008:3008"
+  #   command: ["node", "dist/apps/medicare-batch/main"]
+
+volumes:
+  uploads:
