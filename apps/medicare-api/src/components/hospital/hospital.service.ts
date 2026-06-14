@@ -156,11 +156,15 @@ export class HospitalService {
 		if (periodsRange) match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end };
 		if (squaresRange) match.hospitalSquare = { $gte: squaresRange.start, $lte: squaresRange.end };
 
-		if (text) match.hospitalTitle = { $regex: new RegExp(text, 'i') };
+		if (text) {
+			const regex = new RegExp(text, 'i');
+			match.$and = [
+				...(match.$and ?? []),
+				{ $or: [{ hospitalTitle: regex }, { hospitalLocation: regex }, { hospitalAddress: regex }] },
+			];
+		}
 		if (options) {
-			match['$or'] = options.map((ele) => {
-				return { [ele]: true };
-			});
+			match.$and = [...(match.$and ?? []), { $or: options.map((ele) => ({ [ele]: true })) }];
 		}
 	}
 

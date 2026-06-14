@@ -3,7 +3,12 @@ import { UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 import { AppointmentService } from './appointment.service';
 import { Appointment, Appointments } from '../../libs/dto/appointment/appointment';
-import { AppointmentInput, AppointmentsInquiry } from '../../libs/dto/appointment/appointment.input';
+import { DoctorAvailability } from '../../libs/dto/appointment/availability';
+import {
+	AppointmentInput,
+	AppointmentsInquiry,
+	DoctorAvailabilityInput,
+} from '../../libs/dto/appointment/appointment.input';
 import { AppointmentUpdate } from '../../libs/dto/appointment/appointment.update';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
@@ -27,6 +32,14 @@ export class AppointmentResolver {
 		input.doctorId = shapeIntoMongoObjectId(input.doctorId);
 		input.patientId = memberId;
 		return await this.appointmentService.createAppointment(input);
+	}
+
+	@UseGuards(AuthGuard)
+	@Query(() => DoctorAvailability)
+	public async getDoctorAvailability(@Args('input') input: DoctorAvailabilityInput): Promise<DoctorAvailability> {
+		console.log('Query: getDoctorAvailability');
+		const doctorId = shapeIntoMongoObjectId(input.doctorId);
+		return await this.appointmentService.getDoctorAvailability(doctorId, input.date);
 	}
 
 	@UseGuards(AuthGuard)

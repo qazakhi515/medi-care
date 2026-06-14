@@ -77,19 +77,30 @@ export class DoctorService {
 		if (doctorStatus) match.doctorStatus = doctorStatus;
 		if (specializationList && specializationList.length) match.specialization = { $in: specializationList };
 		if (hospitalId) match.hospitalId = shapeIntoMongoObjectId(hospitalId);
-		if (text) match.licenseNumber = { $regex: new RegExp(text, 'i') };
+
+		// Name search runs against the joined member data (full name or nick).
+		// Regex with the "i" flag → case-insensitive, and no anchors → partial match.
+		const textMatch: T | null = text
+			? {
+					$or: [
+						{ 'memberData.memberFullName': { $regex: new RegExp(text, 'i') } },
+						{ 'memberData.memberNick': { $regex: new RegExp(text, 'i') } },
+					],
+			  }
+			: null;
 
 		const result = await this.doctorModel
 			.aggregate([
 				{ $match: match },
+				lookupMember,
+				{ $unwind: '$memberData' },
+				...(textMatch ? [{ $match: textMatch }] : []),
 				{ $sort: sort },
 				{
 					$facet: {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							lookupMember,
-							{ $unwind: '$memberData' },
 							lookupHospital,
 							{ $unwind: { path: '$hospitalData', preserveNullAndEmptyArrays: true } },
 						],

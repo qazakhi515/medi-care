@@ -36,6 +36,18 @@ export class Doctor {
 	@Field(() => String, { nullable: true })
 	certificates?: string;
 
+	@Field(() => [Int], { nullable: true })
+	workingDays?: number[];
+
+	@Field(() => String, { nullable: true })
+	workStartTime?: string;
+
+	@Field(() => String, { nullable: true })
+	workEndTime?: string;
+
+	@Field(() => Int, { nullable: true })
+	slotDuration?: number;
+
 	@Field(() => Int)
 	doctorRank: number;
 

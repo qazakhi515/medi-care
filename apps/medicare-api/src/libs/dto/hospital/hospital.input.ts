@@ -134,7 +134,7 @@ class HISearch {
 	squaresRange?: SquaresRange;
 
 	@IsOptional()
-	@Field(() => SquaresRange, { nullable: true })
+	@Field(() => String, { nullable: true })
 	text?: string;
 }
 

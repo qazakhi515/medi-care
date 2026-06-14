@@ -12,6 +12,32 @@ import { T } from '../../libs/types/common';
 import { lookupDoctor, lookupPatient, shapeIntoMongoObjectId } from '../../libs/config';
 import { NotificationService } from '../notification/notification.service';
 import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { DoctorAvailability, TimeSlot } from '../../libs/dto/appointment/availability';
+
+// Fallbacks for doctors created before the schedule fields existed.
+const DEFAULT_WORKING_DAYS = [1, 2, 3, 4, 5];
+const DEFAULT_WORK_START = '09:00';
+const DEFAULT_WORK_END = '17:00';
+const DEFAULT_SLOT_DURATION = 30;
+
+const toMinutes = (time: string): number => {
+	const [h, m] = time.split(':').map(Number);
+	return h * 60 + m;
+};
+
+const toTimeString = (total: number): string => {
+	const h = Math.floor(total / 60);
+	const m = total % 60;
+	return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+};
+
+const buildSlots = (start: string, end: string, duration: number): TimeSlot[] => {
+	const slots: TimeSlot[] = [];
+	for (let t = toMinutes(start); t + duration <= toMinutes(end); t += duration) {
+		slots.push({ startTime: toTimeString(t), endTime: toTimeString(t + duration) });
+	}
+	return slots;
+};
 
 @Injectable()
 export class AppointmentService {
@@ -26,6 +52,16 @@ export class AppointmentService {
 			.findOne({ _id: input.doctorId, doctorStatus: DoctorStatus.ACTIVE })
 			.exec();
 		if (!doctor) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		// The requested slot must belong to the doctor's working schedule.
+		const { workingDays, workStart, workEnd, slotDuration } = this.resolveSchedule(doctor);
+		if (!workingDays.includes(new Date(input.appointmentDate).getDay())) {
+			throw new BadRequestException(Message.DOCTOR_NOT_AVAILABLE);
+		}
+		const isValidSlot = buildSlots(workStart, workEnd, slotDuration).some(
+			(s) => s.startTime === input.startTime && s.endTime === input.endTime,
+		);
+		if (!isValidSlot) throw new BadRequestException(Message.SLOT_OUTSIDE_SCHEDULE);
 
 		const slotTaken = await this.appointmentModel
 			.findOne({
@@ -69,6 +105,64 @@ export class AppointmentService {
 		}
 
 		return appointment;
+	}
+
+	public async getDoctorAvailability(doctorId: ObjectId, date: Date): Promise<DoctorAvailability> {
+		const doctor = await this.doctorModel
+			.findOne({ _id: doctorId, doctorStatus: DoctorStatus.ACTIVE })
+			.lean()
+			.exec();
+		if (!doctor) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const { workingDays, workStart, workEnd, slotDuration } = this.resolveSchedule(doctor);
+		const target = new Date(date);
+
+		if (!workingDays.includes(target.getDay())) {
+			return { doctorId: String(doctorId), date: target, isWorkingDay: false, slots: [] };
+		}
+
+		// Booked slots for that calendar day (PENDING/CONFIRMED block the slot).
+		const dayStart = new Date(target);
+		dayStart.setHours(0, 0, 0, 0);
+		const dayEnd = new Date(target);
+		dayEnd.setHours(23, 59, 59, 999);
+
+		const booked = await this.appointmentModel
+			.find({
+				doctorId,
+				appointmentDate: { $gte: dayStart, $lte: dayEnd },
+				appointmentStatus: { $in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] },
+			})
+			.lean()
+			.exec();
+		const takenStartTimes = new Set(booked.map((a) => a.startTime));
+
+		// Drop slots that are already in the past when the requested day is today.
+		const now = new Date();
+		const isToday = now.toDateString() === target.toDateString();
+		const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+		const slots = buildSlots(workStart, workEnd, slotDuration).filter((s) => {
+			if (takenStartTimes.has(s.startTime)) return false;
+			if (isToday && toMinutes(s.startTime) <= nowMinutes) return false;
+			return true;
+		});
+
+		return { doctorId: String(doctorId), date: target, isWorkingDay: true, slots };
+	}
+
+	private resolveSchedule(doctor: Doctor): {
+		workingDays: number[];
+		workStart: string;
+		workEnd: string;
+		slotDuration: number;
+	} {
+		return {
+			workingDays: doctor.workingDays?.length ? doctor.workingDays : DEFAULT_WORKING_DAYS,
+			workStart: doctor.workStartTime ?? DEFAULT_WORK_START,
+			workEnd: doctor.workEndTime ?? DEFAULT_WORK_END,
+			slotDuration: doctor.slotDuration ?? DEFAULT_SLOT_DURATION,
+		};
 	}
 
 	public async getAppointment(memberId: ObjectId, appointmentId: ObjectId): Promise<Appointment> {

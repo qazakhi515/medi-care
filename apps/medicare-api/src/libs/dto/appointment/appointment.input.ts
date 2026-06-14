@@ -37,6 +37,17 @@ export class AppointmentInput {
 }
 
 @InputType()
+export class DoctorAvailabilityInput {
+	@IsNotEmpty()
+	@Field(() => String)
+	doctorId: ObjectId;
+
+	@IsNotEmpty()
+	@Field(() => Date)
+	date: Date;
+}
+
+@InputType()
 export class AppointmentPeriod {
 	@Field(() => Date)
 	start: Date;

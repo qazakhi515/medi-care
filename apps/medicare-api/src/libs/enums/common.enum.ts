@@ -22,6 +22,8 @@ export enum Message {
 	SELF_SUBSCRIPTION_DENIED = 'Self subscription is denied!',
 	DOCTOR_PROFILE_REQUIRED = 'A doctor profile is required for this action!',
 	BOOKING_SLOT_TAKEN = 'This doctor time slot is already booked!',
+	DOCTOR_NOT_AVAILABLE = 'The doctor is not available on the selected day!',
+	SLOT_OUTSIDE_SCHEDULE = 'The selected time is outside the doctor schedule!',
 	PAYMENT_ALREADY_EXISTS = 'A payment already exists for this appointment!',
 	PROFILE_ALREADY_EXISTS = 'A patient profile already exists for this member!',
 	DOCTOR_PROFILE_ALREADY_EXISTS = 'A doctor profile already exists for this member!',

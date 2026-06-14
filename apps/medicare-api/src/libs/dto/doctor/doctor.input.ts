@@ -39,6 +39,24 @@ export class DoctorInput {
 	certificates?: string;
 
 	@IsOptional()
+	@Field(() => [Int], { nullable: true })
+	workingDays?: number[];
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	workStartTime?: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	workEndTime?: string;
+
+	@IsOptional()
+	@IsInt()
+	@Min(5)
+	@Field(() => Int, { nullable: true })
+	slotDuration?: number;
+
+	@IsOptional()
 	@Field(() => String, { nullable: true })
 	hospitalId?: ObjectId;
 

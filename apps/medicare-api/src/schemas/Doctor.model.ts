@@ -49,6 +49,26 @@ const DoctorSchema = new Schema(
 			type: String,
 		},
 
+		workingDays: {
+			type: [Number],
+			default: [1, 2, 3, 4, 5], // 0=Sun ... 6=Sat (Mon-Fri by default)
+		},
+
+		workStartTime: {
+			type: String,
+			default: '09:00',
+		},
+
+		workEndTime: {
+			type: String,
+			default: '17:00',
+		},
+
+		slotDuration: {
+			type: Number,
+			default: 30, // minutes
+		},
+
 		doctorRank: {
 			type: Number,
 			default: 0,
